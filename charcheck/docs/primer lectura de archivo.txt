@@ -1,0 +1,55 @@
+ascii chars letras mayusculas 65 a 90
+minusculas 97 a 122
+
+225 	á reemplazar por a
+	é
+	í
+	ó
+	ú
+	Á
+	É
+	Í
+211 	Ó por O
+	Ú
+241 	ñ
+209 	Ñ
+
+@
+/
+-
+|
+.
+espacio
+numeros
+"
+
+A por Ã¡
+E por Ã©
+I por Ã­
+
+O por Ã³ Ã“
+U
+Ñ por Ã±
+
+AVENDAÃ‘O
+ACUÃ±A
+ACUÃ‘A
+SOCAÃ‘O
+FERNÃ¡NDEZ
+D\\\\\\\\\\\\\\\
+DÂ´ERAMO
+
+MARÃ­A
+ANTUÃ±A
+HÃ¨CTOR
+VERÃ³NICA
+INÃ©S
+
+FABIÃ¡N
+SANTILLÃ¡N
+
+O´¨ BRIEN
+CABAÃ±AS
+
+todo mayuscula
+

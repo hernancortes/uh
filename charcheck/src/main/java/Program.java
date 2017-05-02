@@ -76,7 +76,35 @@ public class Program {
         return hay;
     }
     
-    public void impresionAArchivo(String textoAImprimir, String salidaPorArchivo){
+    public void verificarSiHayCaracteresInvalidos(String lineaAVerificar) throws Exception {
+        Scanner in = null;
+        File selectedFile = null;
+        JFileChooser chooser = new JFileChooser();
+        // para elegir un archivo
+        if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+            selectedFile = chooser.getSelectedFile();
+            in = new Scanner(selectedFile);
+        }
+
+        while (in.hasNext()) {
+            String tmpStr = in.nextLine();
+            if (!tmpStr.equalsIgnoreCase("")) {
+                //String replaceAll = tmpStr.replaceAll("\\s+", "");
+                //verifico cada caracter dentro de los rangos
+                for (int posicion = 0; posicion < tmpStr.length(); posicion++) {
+                    if (lineaAVerificar.codePointAt(posicion) == tmpStr.codePointAt(posicion)) {
+
+                    } else {
+                        System.out.println("Caracter: " + tmpStr.charAt(posicion) + " ASCII: " + tmpStr.codePointAt(posicion));
+                    }
+                //verificarSiHayCaracteresInvalidos(tmpStr, RANGODESDE1, RANGOHASTA1, RANGODESDE2, RANGOHASTA2, RANGODESDE3, RANGOHASTA3);
+                }
+            }
+            in.close();
+        }
+    }
+    
+    public void impresionAArchivo(String textoAImprimir, String salidaPorArchivo) {
         FileWriter archivo = null;
         PrintWriter pw = null;
         String nombreDeArchivo;
