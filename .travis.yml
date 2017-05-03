@@ -1,0 +1,6 @@
+language: java
+before_install:
+ - chmod +x ./build_all.sh
+script: "./build_all.sh"
+jdk:
+ - oraclejdk8
