@@ -1,92 +1,118 @@
-import java.io.File;
-import java.io.FileWriter;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import javax.swing.JFileChooser;
+import java.io.*;
+import java.nio.charset.*;
+import javax.swing.JOptionPane;
 
 public class Program {
     
-    public final static int RANGODESDE1 = 65;
-    public final static int RANGOHASTA1 = 90;
-    public final static int RANGODESDE2 = 97;
-    public final static int RANGOHASTA2 = 122;
-    public final static int RANGODESDE3 = 48;
-    public final static int RANGOHASTA3 = 57;
-    public final static int CARACTERESPECIAL1 = 32;
-    
-    private static Scanner contenidoDeArchivoAVerificar = null;
+    //para impresion de salto de linea en pantalla o archivo
+    public final static char CR  = (char) 0x0D;
+    public final static char LF  = (char) 0x0A; 
+    public final static String CRLF  = "" + CR + LF;
+    //private static Scanner contenidoDeArchivoAVerificar = null;
     private File archivoAVerificar;
-    private static Scanner contenidoDeArchivoCaracteresValidos = null;
+    //private static Scanner contenidoDeArchivoCaracteresValidos = null;
     private File archivoCaracteresValidos;
-    private static List<String> caracteresAVerificar = new ArrayList<>();
-    private static List<String> caracteresValidos = new ArrayList<>();
+    private static List<Integer> caracteresAVerificar = new ArrayList<>();
+    private static List<Integer> caracteresValidos = new ArrayList<>();
     private static String textoProcesado = "";
+    private final static Charset CHARSET = Charset.forName("ISO-8859-1");
+    //private final static Charset UTF8 = Charset.forName("UTF-8");
+    //private final static Charset ISO = Charset.forName("ISO-8859-1");
+    private static String nombreArchivoAProcesar;
+    private static String nombreArchivoCaracteresValidos;
     
+    private final static int CARACTERESANTESDELCARACTERINVALIDO = 15;
+    private final static int CARACTERESDESPUESDELCARACTERINVALIDO = 15;
     public static void main(String[] arg) throws Exception {
        Program programa = new Program();
-       contenidoDeArchivoAVerificar = programa.seleccionDeArchivoAProcesar();
-       caracteresAVerificar = programa.contenidoArchivoALista(contenidoDeArchivoAVerificar);
-       contenidoDeArchivoCaracteresValidos = programa.seleccionDeArchivoCaracteres();
-       caracteresValidos = programa.contenidoArchivoALista(contenidoDeArchivoCaracteresValidos);
-       //programa.recorrerArchivoAProcesar(caracteresAProcesar, caracteresValidos);
+       nombreArchivoAProcesar = programa.seleccionDeArchivoAProcesar();
+       caracteresAVerificar = programa.contenidoArchivoALista(nombreArchivoAProcesar);
+       nombreArchivoCaracteresValidos = programa.seleccionDeArchivoAProcesar();
+       caracteresValidos = programa.contenidoArchivoALista(nombreArchivoCaracteresValidos);
+       //agrego algunos caracteres especiales
+       caracteresValidos.add(65279); //caracter especial agregado por notepad
+       //caracteresValidos.add(209); //caracter Ñ
        textoProcesado = programa.compararListasDeCaracteres(caracteresAVerificar, caracteresValidos);
-       programa.guardarTextoEnArchivo(textoProcesado);
-       contenidoDeArchivoAVerificar.close();
-       contenidoDeArchivoCaracteresValidos.close();
+       programa.guardarTextoEnArchivo(caracteresAVerificar);
     }
    
-    public Scanner seleccionDeArchivoAProcesar() throws Exception {
-        Scanner contenido = null;
+    public String seleccionDeArchivoAProcesar() throws Exception {
         File archivo = null;
         JFileChooser seleccionadorDeArchivos = new JFileChooser();
         if (seleccionadorDeArchivos.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
             archivo = seleccionadorDeArchivos.getSelectedFile();
-            contenido = new Scanner(archivo);
         }
-        return contenido;
+        return archivo.getAbsolutePath();
     }
     
-    public Scanner seleccionDeArchivoCaracteres() throws Exception {
-        Scanner contenido2 = null;
-        File archivo2 = null;
-        JFileChooser seleccionadorDeArchivos = new JFileChooser();
-        if (seleccionadorDeArchivos.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-            archivo2 = seleccionadorDeArchivos.getSelectedFile();
-            contenido2 = new Scanner(archivo2);
-        }
-        return contenido2;
-    }
-    
-    public List<String> contenidoArchivoALista(Scanner contenido) {
-        List<String> lista = new ArrayList<>();
-        while (contenido.hasNext()) {
-            String tmpStr = contenido.nextLine();
-            for (int i=0; i < tmpStr.length(); i++) {
-                lista.add(String.valueOf(tmpStr.charAt(i)));
-            }
+    public List<Integer> contenidoArchivoALista(String archivo) throws IOException {
+        List<Integer> lista = new ArrayList<>();
+        Reader reader = new InputStreamReader(new FileInputStream(archivo), CHARSET);
+        try {
+            int c;
+            while (-1 != (c = reader.read())) {
+                lista.add(c);
+            }  
+        } finally {
+            reader.close();
         }
         return lista;
     }
     
-    public String compararListasDeCaracteres(List<String> caracteresAVerificar, List<String> caracteresValidos) {
+    public String compararListasDeCaracteres(List<Integer> caracteresAVerificar, List<Integer> caracteresValidos) {
         boolean encontrado = false;
         String texto = "";
-        for (String caracterAVerificar : caracteresAVerificar) {
-            for(int i = 0; i < caracteresValidos.size() && !encontrado; i++) {
-                //System.out.println("Comparando : " + caracterAVerificar + " con: " + caracteresValidos.get(i));
-                encontrado = caracterAVerificar.equals(caracteresValidos.get(i));
+        //for (Integer caracterAVerificar : caracteresAVerificar) {
+        for (int x = 0; x < caracteresAVerificar.size(); x++) {
+            for (int i = 0; i < caracteresValidos.size() && !encontrado; i++) {
+                //System.out.println("Comparando : " + caracteresAVerificar.get(x) + " con: " + caracteresValidos.get(i));
+                encontrado = caracteresAVerificar.get(x).equals(caracteresValidos.get(i));
             }
             if (!encontrado) {
-                System.out.println("El caracter : " + caracterAVerificar + " no es valido");
+                //System.out.println("El caracter : " + caracteresAVerificar.get(x) + " no es valido");
+                caracteresAVerificar.set(x, accionDeCaracterInvalido(caracteresAVerificar, x));
             }
-            texto = texto + caracterAVerificar;
+            //texto = texto + Character.toChars(Integer.parseInt(caracterAVerificar));
             encontrado = false;
         }
         return texto;
     }
     
+    public int accionDeCaracterInvalido(List<Integer> caracteresAVerificar, int posicionCaracterInvalido) {
+        int charAMostrar = caracteresAVerificar.get(posicionCaracterInvalido);
+        String mensajeDeError = "El caracter " + (char)charAMostrar + " no es valido (nro " + charAMostrar + ")";
+        //System.out.println("El caracter : " + caracteresAVerificar.get(posicionCaracterInvalido) + " no es valido");
+        String contextoDeCaracterInvalido = "";
+        //chequeo los rangos del contexto
+        int caracteresAntes = CARACTERESANTESDELCARACTERINVALIDO;
+        int caracteresDespues = CARACTERESDESPUESDELCARACTERINVALIDO;
+        //si esta muy cerca del inicio entonces que el inicio sea 0
+        if ((posicionCaracterInvalido - CARACTERESANTESDELCARACTERINVALIDO) < 0) {
+            caracteresAntes = posicionCaracterInvalido; 
+        }
+        //si esta muy cerca del final entonces que el final sea el ultimo
+        if ((posicionCaracterInvalido + CARACTERESDESPUESDELCARACTERINVALIDO) > caracteresAVerificar.size()) {
+            caracteresDespues = caracteresAVerificar.size() - posicionCaracterInvalido; 
+        }
+        for (int x = posicionCaracterInvalido - caracteresAntes; x < posicionCaracterInvalido + caracteresDespues; x++) {
+            charAMostrar = caracteresAVerificar.get(x);
+            contextoDeCaracterInvalido = contextoDeCaracterInvalido + (char)charAMostrar;
+        }
+        String caracter = JOptionPane.showInputDialog(mensajeDeError + "\n" + "Contexto del caracter: \n" + contextoDeCaracterInvalido, "?");
+        int codigoADevolver = 32; //DEVUELVO POR DEFECTO UN ESPACIO
+        if (caracter.equals("")) {
+            codigoADevolver = 999; //CODIGO QUE REPRESENTA CARACTER ELIMINADO
+        } else {
+            codigoADevolver = caracter.codePointAt(0);
+        }
+        return codigoADevolver;
+    }
+    
+    /*
     public int recorrerArchivoAProcesar(Scanner contenido, List<String> caracteresValidos) {
         int cantidadDeCaracteres = 0;
         int cantidadDePalabras = 0;
@@ -103,12 +129,11 @@ public class Program {
             }
             ++cantidadDeLineas;
         }
-
         System.out.println("Cantidad de caracteres totales : " + cantidadDeCaracteres);
         System.out.println("Cantidad of palabras totales : " + cantidadDePalabras);
         System.out.println("Cantidad of lineas totales : " + cantidadDeLineas);
         return cantidadDeCaracteres;
-    }
+    }*/
     
     public void compararCaracteresConCaracteresValidos(String tmpStr, List<String> caracteresValidos) {
         boolean encontrado = false;
@@ -119,94 +144,18 @@ public class Program {
             }
         }
     
-    public void guardarTextoEnArchivo(String textoAGuardar) {
-        FileWriter archivo = null;
-        PrintWriter pw = null;
+    public static void guardarTextoEnArchivo(List<Integer> listaCaracteres) throws IOException {
         String nombreDeArchivo = "salida.txt";
-        //si solo fue ingresado argumento "--output-file=" el archivo se llamara "salida.txt"
-        /*
-        if (salidaPorArchivo.length()>14){
-            nombreDeArchivo = salidaPorArchivo.substring(14, salidaPorArchivo.length());
-        } else {
-            nombreDeArchivo = "salida.txt";
-        }*/
-        try{
-            archivo = new FileWriter(nombreDeArchivo);
-            pw = new PrintWriter(archivo);
-            pw.println(textoAGuardar);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-           try {
-               if (null != archivo) archivo.close();
-           } catch (Exception e2) {
-              e2.printStackTrace();
-           }
-        }
-    }
-    
-}
-/*
-    public boolean verificarSiHayCaracteresInvalidos(String tmpStr, int rangoDesde1, int rangoHasta1, int rangoDesde2, int rangoHasta2, int rangoDesde3, int rangoHasta3) {
-        boolean hay = false;
-        for (int posicion = 0; posicion < tmpStr.length(); posicion++) {
-            if (tmpStr.codePointAt(posicion) >= rangoDesde1 && tmpStr.codePointAt(posicion) <= rangoHasta1 || 
-                    tmpStr.codePointAt(posicion) >= rangoDesde2 && tmpStr.codePointAt(posicion) <= rangoHasta2 ||
-                            tmpStr.codePointAt(posicion) >= rangoDesde3 && tmpStr.codePointAt(posicion) <= rangoHasta3) {
-
-            } else {
-                String lineaACorregir = tmpStr;
-                String caracterACorregir = "Caracter: " + tmpStr.charAt(posicion) + " ASCII: " + tmpStr.codePointAt(posicion);
-                createAndShowGUI(lineaACorregir, caracterACorregir);
-                
-                System.out.println("Caracter: " + tmpStr.charAt(posicion) + " ASCII: " + tmpStr.codePointAt(posicion));
-                hay = true;
-            }
-        }
-        return hay;
-    }
-    
-    public void verificarSiHayCaracteresInvalidos(String lineaAVerificar) throws Exception {
-        Scanner in = null;
-        File selectedFile = null;
-        JFileChooser chooser = new JFileChooser();
-        // para elegir un archivo
-        if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-            selectedFile = chooser.getSelectedFile();
-            in = new Scanner(selectedFile);
-        }
-
-        while (in.hasNext()) {
-            String tmpStr = in.nextLine();
-            if (!tmpStr.equalsIgnoreCase("")) {
-                //String replaceAll = tmpStr.replaceAll("\\s+", "");
-                //verifico cada caracter dentro de los rangos
-                for (int posicion = 0; posicion < tmpStr.length(); posicion++) {
-                    if (lineaAVerificar.codePointAt(posicion) == tmpStr.codePointAt(posicion)) {
-
-                    } else {
-                        mostarPantalla("Caracter: " + tmpStr.charAt(posicion) + " ASCII: " + tmpStr.codePointAt(posicion));
-                        //System.out.println("Caracter: " + tmpStr.charAt(posicion) + " ASCII: " + tmpStr.codePointAt(posicion));
-                    }
-                //verificarSiHayCaracteresInvalidos(tmpStr, RANGODESDE1, RANGOHASTA1, RANGODESDE2, RANGOHASTA2, RANGODESDE3, RANGOHASTA3);
+        Writer writer = new OutputStreamWriter(new FileOutputStream(nombreDeArchivo), CHARSET);
+        try{            
+            for (int caracter : listaCaracteres) {
+                if (caracter != 999) {
+                    writer.write((char)caracter);
                 }
-            }
-            in.close();
-        }
+            }   
+        } finally {
+            writer.close();
+        } 
     }
-    */
-    /*
-    private static void createAndShowGUI(String lineaACorregir, String textoAMostrar) {
-        //Create and set up the window.
-        JFrame frame = new JFrame("Charcheck");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        //Add contents to the window.
-        frame.add(new TextDemo(lineaACorregir, textoAMostrar));
-
-        //Display the window.
-        frame.pack();
-        frame.setVisible(true);
-    }
-    */
+}
