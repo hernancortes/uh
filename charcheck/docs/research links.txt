@@ -1,0 +1,38 @@
+http://stackoverflow.com/questions/1164703/adding-non-printable-chars-to-a-string-in-java
+
+http://stackoverflow.com/questions/3142208/non-printable-characters-in-java
+
+http://stackoverflow.com/questions/8519669/replace-non-ascii-character-from-string
+
+http://stackoverflow.com/questions/6784799/what-is-this-char-65279
+
+ñ in UTF8
+
+http://www.merinomartinez.com/2012/06/tabla-de-conversion-de-simbolos-utf-8-a-iso-8859-1-ansi/
+
+http://www.forosdelweb.com/f91/porque-acentos-n-salen-como-interrogants-si-tengo-utf-8-a-928067/
+
+-------------------------------------------------------------------------------------------------
+
+http://stackoverflow.com/questions/9989414/how-to-create-a-string-with-carriage-returns
+
+http://stackoverflow.com/questions/18380901/how-do-i-convert-unicode-codepoint-to-their-character-presentation
+
+http://stackoverflow.com/questions/9120122/java-ascii-output-to-file
+
+http://www.elcodigoascii.com.ar/caracteres-ascii-control/salto-linea-nueva-linea-codigo-ascii-10.html
+
+http://stackoverflow.com/questions/3714090/how-to-see-if-a-reader-is-at-eof
+
+http://www.aprenderaprogramar.com/index.php?option=com_content&view=article&id=244:ingresar-datos-con-un-control-visual-java-jtextfield-y-gettext-clase-y-metodo-ejemplos-sencillos-cu00928c&catid=58&Itemid=180
+
+Otra forma relevante  de pedir datos con Java, consiste en el uso de ventanas de dialogo de petición de datos (JOptionPane.showInputDialog). Cuando se invoca la función JOptionPane.showInputDialog, se despliega una ventana independiente, con un mensaje definido de solicitud de datos al usuario, que dispone de una caja de texto asociado para responder y de botones para aceptar o cancelar. La sintaxis es:
+ 
+String s = JOptionPane.showInputDialog("Introduzca un número","Introducción  número");
+ 
+          donde “s” es una variable, que toma el valor que haya introducido el usuario en forma de cadena.
+
+
+
+http://alvinalexander.com/java/joptionpane-showinputdialog-examples
+
