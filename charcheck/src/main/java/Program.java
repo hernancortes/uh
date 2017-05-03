@@ -10,14 +10,21 @@ public class Program {
     private static List<Integer> caracteresAVerificar = new ArrayList<>();
     private static List<Integer> caracteresValidos = new ArrayList<>();
     private static String textoProcesado = "";
-    private final static Charset CHARSET = Charset.forName("ISO-8859-1");
-    //private final static Charset UTF8 = Charset.forName("UTF-8");
-    //private final static Charset ISO = Charset.forName("ISO-8859-1");
+    //private final static Charset CHARSET = Charset.forName("ISO-8859-1");
+    private final static Charset UTF = Charset.forName("UTF-8");
+    private final static Charset ISO = Charset.forName("ISO-8859-1");
     private static String nombreArchivoAProcesar;
     private static String nombreArchivoCaracteresValidos;
     private final static int CARACTERESANTESDELCARACTERINVALIDO = 15;
     private final static int CARACTERESDESPUESDELCARACTERINVALIDO = 15;
     private final static int CODIGOQUEREPRESENTACARACTERELIMINADO = 999;
+    private final static int CODIGOQUEREPRESENTAENIE = 209;
+    private final static int CODIGOQUEREPRESENTA_U = 85;
+    private final static int CODIGOQUEREPRESENTA_E = 69;
+    private final static int CODIGOQUEREPRESENTA_I = 73;
+    private final static int CODIGOQUEREPRESENTA_A = 65;
+    private final static int CODIGOQUEREPRESENTA_O = 79;
+    private final static int CODIGOQUEREPRESENTA_o_min = 111;
     
     public static void main(String[] arg) throws Exception {
        Program programa = new Program();
@@ -27,7 +34,9 @@ public class Program {
        caracteresValidos = programa.contenidoArchivoALista(nombreArchivoCaracteresValidos);
        //agrego algunos caracteres especiales
        caracteresValidos.add(65279); //caracter especial agregado por notepad
-       //caracteresValidos.add(209); //caracter Ñ
+       caracteresValidos.add(CODIGOQUEREPRESENTACARACTERELIMINADO); //caracter Ñ
+       //caracteresValidos.add(CODIGOQUEREPRESENTAENIE); //caracter Ñ
+       //caracteresValidos.add(195); //caracter Ñ
        programa.compararListasDeCaracteres(caracteresAVerificar, caracteresValidos);
        programa.guardarTextoEnArchivo(caracteresAVerificar);
     }
@@ -43,7 +52,7 @@ public class Program {
     
     public List<Integer> contenidoArchivoALista(String archivo) throws IOException {
         List<Integer> lista = new ArrayList<>();
-        Reader reader = new InputStreamReader(new FileInputStream(archivo), CHARSET);
+        Reader reader = new InputStreamReader(new FileInputStream(archivo), ISO);
         try {
             int c;
             while (-1 != (c = reader.read())) {
@@ -57,6 +66,7 @@ public class Program {
     
     public void compararListasDeCaracteres(List<Integer> caracteresAVerificar, List<Integer> caracteresValidos) {
         boolean encontrado = false;
+        boolean cambioAutomatico = false;
         for (int x = 0; x < caracteresAVerificar.size(); x++) {
             for (int i = 0; i < caracteresValidos.size() && !encontrado; i++) {
                 //System.out.println("Comparando : " + caracteresAVerificar.get(x) + " con: " + caracteresValidos.get(i));
@@ -64,9 +74,115 @@ public class Program {
             }
             if (!encontrado) {
                 //System.out.println("El caracter : " + caracteresAVerificar.get(x) + " no es valido");
-                caracteresAVerificar.set(x, accionDeCaracterInvalido(caracteresAVerificar, x));
+                if (caracteresAVerificar.get(x) == 195 && caracteresAVerificar.get(x + 1) == 8216){
+                    caracteresAVerificar.set(x, CODIGOQUEREPRESENTAENIE);
+                    caracteresAVerificar.set(x + 1, CODIGOQUEREPRESENTACARACTERELIMINADO);
+                    cambioAutomatico = true;
+                }
+                if (caracteresAVerificar.get(x) == 195 && caracteresAVerificar.get(x + 1) == 145){
+                    caracteresAVerificar.set(x, CODIGOQUEREPRESENTAENIE);
+                    caracteresAVerificar.set(x + 1, CODIGOQUEREPRESENTACARACTERELIMINADO);
+                    cambioAutomatico = true;
+                }
+                if (caracteresAVerificar.get(x) == 195 && caracteresAVerificar.get(x + 1) == 177){
+                    caracteresAVerificar.set(x, CODIGOQUEREPRESENTAENIE);
+                    caracteresAVerificar.set(x + 1, CODIGOQUEREPRESENTACARACTERELIMINADO);
+                    cambioAutomatico = true;
+                }
+                if (caracteresAVerificar.get(x) == 195 && caracteresAVerificar.get(x + 1) == 186){
+                    caracteresAVerificar.set(x, CODIGOQUEREPRESENTA_U);
+                    caracteresAVerificar.set(x + 1, CODIGOQUEREPRESENTACARACTERELIMINADO);
+                    cambioAutomatico = true;
+                }
+                if (caracteresAVerificar.get(x) == 195 && caracteresAVerificar.get(x + 1) == 339){
+                    caracteresAVerificar.set(x, CODIGOQUEREPRESENTA_U);
+                    caracteresAVerificar.set(x + 1, CODIGOQUEREPRESENTACARACTERELIMINADO);
+                    cambioAutomatico = true;
+                }
+                if (caracteresAVerificar.get(x) == 195 && caracteresAVerificar.get(x + 1) == 188){
+                    caracteresAVerificar.set(x, CODIGOQUEREPRESENTA_U);
+                    caracteresAVerificar.set(x + 1, CODIGOQUEREPRESENTACARACTERELIMINADO);
+                    cambioAutomatico = true;
+                }
+                if (caracteresAVerificar.get(x) == 195 && caracteresAVerificar.get(x + 1) == 137){
+                    caracteresAVerificar.set(x, CODIGOQUEREPRESENTA_E);
+                    caracteresAVerificar.set(x + 1, CODIGOQUEREPRESENTACARACTERELIMINADO);
+                    cambioAutomatico = true;
+                }
+                if (caracteresAVerificar.get(x) == 195 && caracteresAVerificar.get(x + 1) == 169){
+                    caracteresAVerificar.set(x, CODIGOQUEREPRESENTA_E);
+                    caracteresAVerificar.set(x + 1, CODIGOQUEREPRESENTACARACTERELIMINADO);
+                    cambioAutomatico = true;
+                }
+                if (caracteresAVerificar.get(x) == 195 && caracteresAVerificar.get(x + 1) == 173){
+                    caracteresAVerificar.set(x, CODIGOQUEREPRESENTA_I);
+                    caracteresAVerificar.set(x + 1, CODIGOQUEREPRESENTACARACTERELIMINADO);
+                    cambioAutomatico = true;
+                }
+                if (caracteresAVerificar.get(x) == 195 && caracteresAVerificar.get(x + 1) == 141){
+                    caracteresAVerificar.set(x, CODIGOQUEREPRESENTA_I);
+                    caracteresAVerificar.set(x + 1, CODIGOQUEREPRESENTACARACTERELIMINADO);
+                    cambioAutomatico = true;
+                }
+                if (caracteresAVerificar.get(x) == 195 && caracteresAVerificar.get(x + 1) == 161){
+                    caracteresAVerificar.set(x, CODIGOQUEREPRESENTA_A);
+                    caracteresAVerificar.set(x + 1, CODIGOQUEREPRESENTACARACTERELIMINADO);
+                    cambioAutomatico = true;
+                }
+                if (caracteresAVerificar.get(x) == 195 && caracteresAVerificar.get(x + 1) == 129){
+                    caracteresAVerificar.set(x, CODIGOQUEREPRESENTA_A);
+                    caracteresAVerificar.set(x + 1, CODIGOQUEREPRESENTACARACTERELIMINADO);
+                    cambioAutomatico = true;
+                }
+                if (caracteresAVerificar.get(x) == 195 && caracteresAVerificar.get(x + 1) == 147){
+                    caracteresAVerificar.set(x, CODIGOQUEREPRESENTA_O);
+                    caracteresAVerificar.set(x + 1, CODIGOQUEREPRESENTACARACTERELIMINADO);
+                    cambioAutomatico = true;
+                }
+                if (caracteresAVerificar.get(x) == 195 && caracteresAVerificar.get(x + 1) == 179){
+                    caracteresAVerificar.set(x, CODIGOQUEREPRESENTA_O);
+                    caracteresAVerificar.set(x + 1, CODIGOQUEREPRESENTACARACTERELIMINADO);
+                    cambioAutomatico = true;
+                }
+                if (caracteresAVerificar.get(x) == 195 && caracteresAVerificar.get(x + 1) == 156){
+                    caracteresAVerificar.set(x, CODIGOQUEREPRESENTA_U);
+                    caracteresAVerificar.set(x + 1, CODIGOQUEREPRESENTACARACTERELIMINADO);
+                    cambioAutomatico = true;
+                }
+                if (caracteresAVerificar.get(x) == 250){
+                    caracteresAVerificar.set(x, CODIGOQUEREPRESENTA_U);
+                    cambioAutomatico = true;
+                }
+                if (caracteresAVerificar.get(x) == 252){
+                    caracteresAVerificar.set(x, CODIGOQUEREPRESENTA_U);
+                    cambioAutomatico = true;
+                }
+                if (caracteresAVerificar.get(x) == 220){
+                    caracteresAVerificar.set(x, CODIGOQUEREPRESENTA_U);
+                    cambioAutomatico = true;
+                }
+                if (caracteresAVerificar.get(x) == 237){
+                    caracteresAVerificar.set(x, CODIGOQUEREPRESENTA_I);
+                    cambioAutomatico = true;
+                }
+                if (caracteresAVerificar.get(x) == 243){
+                    caracteresAVerificar.set(x, CODIGOQUEREPRESENTA_o_min);
+                    cambioAutomatico = true;
+                }
+                if (caracteresAVerificar.get(x) == 241){
+                    caracteresAVerificar.set(x, CODIGOQUEREPRESENTAENIE);
+                    cambioAutomatico = true;
+                }
+                if (caracteresAVerificar.get(x) == 233){
+                    caracteresAVerificar.set(x, CODIGOQUEREPRESENTA_E);
+                    cambioAutomatico = true;
+                }
+                if (!cambioAutomatico) {
+                    caracteresAVerificar.set(x, accionDeCaracterInvalido(caracteresAVerificar, x));
+                }
             }
             encontrado = false;
+            cambioAutomatico = false;
         }
     }
     
@@ -100,7 +216,7 @@ public class Program {
     
     public static void guardarTextoEnArchivo(List<Integer> listaCaracteres) throws IOException {
         String nombreDeArchivo = "salida.txt";
-        Writer writer = new OutputStreamWriter(new FileOutputStream(nombreDeArchivo), CHARSET);
+        Writer writer = new OutputStreamWriter(new FileOutputStream(nombreDeArchivo), ISO);
         try{            
             for (int caracter : listaCaracteres) {
                 if (caracter != 999) {

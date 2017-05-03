@@ -1,0 +1,12 @@
+@echo off
+echo ------------------------------------------------ >>listado.txt
+echo ------------------------------------------------ >>listado.txt
+Set /P UName= Nombre y Apellido :
+echo Nombre y Apellido: %UName% >>listado.txt
+echo %date% >>listado.txt
+echo %time% >>listado.txt
+echo %COMPUTERNAME% >>listado.txt
+echo %username% >>listado.txt
+getmac >>listado.txt
+echo.
+echo.
